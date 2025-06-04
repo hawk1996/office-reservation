@@ -1,3 +1,5 @@
+Run OfficeReservation.sql to seed DB
+
 Mock users:
 alice@example.com
 bob@example.com
@@ -6,3 +8,4 @@ diana@example.com
 ethan@example.com
 
 All passwords are 123
+
