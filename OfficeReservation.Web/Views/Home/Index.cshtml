@@ -1,8 +1,58 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model OfficeReservation.Web.Models.Home.HomeViewModel
+@{
+    ViewData["Title"] = "Home";
+    var selectedDateString = Model.SelectedDate.ToString("yyyy-MM-dd");
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-4">
+    <h2>Select a Date</h2>
+
+    <form method="get" asp-action="Index" asp-controller="Home" class="mb-4">
+        <div class="row align-items-end">
+            <div class="col-md-6">
+                <label for="selectedDate" class="form-label">Reservation Date</label>
+                <input type="date" id="selectedDate" name="date" value="@selectedDateString" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <a class="btn btn-success mt-3" asp-controller="Reservation" asp-action="Create" asp-route-reservationDate="@selectedDateString">Create New Reservation</a>
+            </div>
+        </div>
+    </form>
+
+    <h3>Your Favorite Workstations</h3>
+
+    @if (!Model.FavoriteWorkstations.Any())
+    {
+        <p>You have no favorite workstations yet.</p>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var workstation in Model.FavoriteWorkstations)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                Floor @workstation.Floor, Zone @workstation.Zone
+                            </h5>
+
+                            @if (workstation.IsAvailable)
+                            {
+                                <form asp-controller="Reservation" asp-action="QuickCreate" method="post">
+                                    <input type="hidden" name="WorkstationId" value="@workstation.WorkstationId" />
+                                    <input type="hidden" name="ReservationDate" value="@selectedDateString" />
+                                    <button type="submit" class="btn btn-outline-success w-100">Quick Reserve</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <button class="btn btn-secondary w-100" disabled>Not Available</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 </div>

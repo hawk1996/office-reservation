@@ -14,7 +14,13 @@ namespace OfficeReservation.Services.Implementations
             this.workstationRepository = workstationRepository;
             this.reservationService = reservationService;
         }
-        public async Task<GetAllAvailableResponse> GetAllAvailableAsync(DateOnly date)
+        public async Task<GetWorkstationsResponse> GetAllAsync()
+        {
+            var allWorkstations = await workstationRepository.RetrieveCollectionAsync().ToListAsync();
+            return new GetWorkstationsResponse { Workstations = allWorkstations.Select(MapToDto) };
+        }
+
+        public async Task<GetWorkstationsResponse> GetAllAvailableAsync(DateOnly date)
         {
             var allWorkstations = await workstationRepository.RetrieveCollectionAsync().ToListAsync();
             var reservedIds = await reservationService.GetReservedWorkstationIdsAsync(date);
@@ -22,11 +28,12 @@ namespace OfficeReservation.Services.Implementations
             var available = allWorkstations
                 .Where(ws => !reservedIds.ReservedWorkstationIds.Contains(ws.WorkstationId));
 
-            return new GetAllAvailableResponse { Workstations = available.Select(MapToDto) };
+            return new GetWorkstationsResponse { Workstations = available.Select(MapToDto) };
         }
 
-        private static WorkstationDto MapToDto(Workstation workstation) => new WorkstationDto
+        private static WorkstationInfo MapToDto(Workstation workstation) => new WorkstationInfo
         {
+            WorkstationId = workstation.WorkstationId,
             Floor = workstation.Floor,
             Zone = workstation.Zone,
             HasMonitor = workstation.HasMonitor,

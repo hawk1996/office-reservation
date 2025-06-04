@@ -1,0 +1,23 @@
+﻿@model List<OfficeReservation.Web.Models.Reservation.UserReservationViewModel>
+
+<h2>My Reservations</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Floor</th>
+            <th>Zone</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.ReservationDate.ToString("yyyy-MM-dd")</td>
+                <td>@r.Floor</td>
+                <td>@r.Zone</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,42 @@
+﻿@model List<OfficeReservation.Web.Models.Workstation.WorkstationViewModel>
+@{
+    ViewData["Title"] = "Workstations";
+}
+
+<div class="container mt-4">
+    <h2>All Workstations</h2>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Floor</th>
+                <th>Zone</th>
+                <th>Monitor</th>
+                <th>Docking Station</th>
+                <th>Near Window</th>
+                <th>Near Printer</th>
+                <th>Favorite</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ws in Model)
+            {
+                <tr>
+                    <td>@ws.Floor</td>
+                    <td>@ws.Zone</td>
+                    <td>@(ws.HasMonitor ? "Yes" : "No")</td>
+                    <td>@(ws.HasDockingStation ? "Yes" : "No")</td>
+                    <td>@(ws.NearWindow ? "Yes" : "No")</td>
+                    <td>@(ws.NearPrinter ? "Yes" : "No")</td>
+                    <td>
+                        <form asp-action="ToggleFavorite" method="post" style="display:inline;">
+                            <input type="hidden" name="workstationId" value="@ws.WorkstationId" />
+                            <button type="submit" class="btn btn-link p-0" title="Toggle Favorite">
+                                <i class="bi @(ws.IsFavorite ? "bi-star-fill text-warning" : "bi-star text-muted")"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

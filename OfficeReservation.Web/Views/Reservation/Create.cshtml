@@ -1,0 +1,60 @@
+﻿@model OfficeReservation.Web.Models.Reservation.CreateReservationViewModel
+@{
+    ViewData["Title"] = "Create Reservation";
+    var reservationDateString = Model.ReservationDate.ToString("yyyy-MM-dd");
+}
+
+<div class="container mt-4">
+    <h2>Create Reservation</h2>
+    <p>Selected Date: <strong>@reservationDateString</strong></p>
+
+    @if (!Model.Workstations.Any())
+    {
+        <div class="alert alert-warning">No available workstations for this date.</div>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Floor</th>
+                    <th>Zone</th>
+                    <th>Monitor</th>
+                    <th>Docking Station</th>
+                    <th>Near Window</th>
+                    <th>Near Printer</th>
+                    <th>Favorite</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ws in Model.Workstations)
+                {
+                    <tr>
+                        <td>@ws.Floor</td>
+                        <td>@ws.Zone</td>
+                        <td>@(ws.HasMonitor ? "Yes" : "No")</td>
+                        <td>@(ws.HasDockingStation ? "Yes" : "No")</td>
+                        <td>@(ws.NearWindow ? "Yes" : "No")</td>
+                        <td>@(ws.NearPrinter ? "Yes" : "No")</td>
+                        <td>
+                            @if (ws.IsFavorite)
+                            {
+                                <span class="text-warning">&#9733;</span>
+                            }
+                        </td>
+                        <td>
+                            <form method="post" asp-action="Create" asp-controller="Reservation">
+                                <input type="hidden" name="SelectedWorkstationId" value="@ws.WorkstationId" />
+                                <input type="hidden" name="ReservationDate" value="@reservationDateString" />
+                                <button type="submit" class="btn btn-sm btn-primary">Reserve</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary mt-3">Back to Home</a>
+</div>

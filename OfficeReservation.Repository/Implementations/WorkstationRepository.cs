@@ -5,7 +5,7 @@ using OfficeReservation.Repository.Interfaces.Workstation;
 
 namespace OfficeReservation.Repository.Implementations
 {
-    public class WorkstationRepository : BaseRepository<Workstation, WorkstationFilter, WorkstationUpdate>
+    public class WorkstationRepository : BaseRepository<Workstation, WorkstationFilter, WorkstationUpdate>, IWorkstationRepository
     {
         protected override string[] GetColumns() => new[]
        {

@@ -4,6 +4,7 @@ namespace OfficeReservation.Services.Interfaces
 {
     public interface IWorkstationService
     {
-        Task<GetAllAvailableResponse> GetAllAvailableAsync(DateOnly date);
+        Task<GetWorkstationsResponse> GetAllAsync();
+        Task<GetWorkstationsResponse> GetAllAvailableAsync(DateOnly date);
     }
 }

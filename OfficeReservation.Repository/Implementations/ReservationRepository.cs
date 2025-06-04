@@ -5,7 +5,7 @@ using OfficeReservation.Repository.Interfaces.Reservation;
 
 namespace OfficeReservation.Repository.Implementations
 {
-    public class ReservationRepository : BaseRepository<Reservation, ReservationFilter, ReservationUpdate>
+    public class ReservationRepository : BaseRepository<Reservation, ReservationFilter, ReservationUpdate>, IReservationRepository
     {
         protected override string[] GetColumns() => new[]
 {

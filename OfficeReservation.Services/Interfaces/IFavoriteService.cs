@@ -6,6 +6,7 @@ namespace OfficeReservation.Services.Interfaces
     {
         Task<AddToFavoritesResponse> AddToFavoritesAsync(AddToFavoritesRequest request);
         Task<IsFavoritedResponse> IsFavoritedAsync(IsFavoritedRequest request);
+        Task<GetUserFavoritesResponse> GetUserFavoritesAsync(int userId);
         Task<GetFavoritesCountResponse> GetFavoritesCountAsync(int userId);
         Task<RemoveFromFavoritesResponse> RemoveFromFavoritesAsync(int favoriteId);
     }

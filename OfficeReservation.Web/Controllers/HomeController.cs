@@ -1,32 +1,56 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using OfficeReservation.Web.Models;
+using OfficeReservation.Services.DTOs.Reservation;
+using OfficeReservation.Services.Interfaces;
+using OfficeReservation.Web.Controllers;
+using OfficeReservation.Web.Models.Home;
 
-namespace OfficeReservation.Web.Controllers
+public class HomeController : BaseController
 {
-    public class HomeController : Controller
+    private readonly IFavoriteService favoriteService;
+    private readonly IWorkstationService workstationService;
+    private readonly IReservationService reservationService;
+
+    public HomeController(
+        IFavoriteService favoriteService,
+        IWorkstationService workstationService,
+        IReservationService reservationService)
     {
-        private readonly ILogger<HomeController> _logger;
+        this.favoriteService = favoriteService;
+        this.workstationService = workstationService;
+        this.reservationService = reservationService;
+    }
 
-        public HomeController(ILogger<HomeController> logger)
+    [HttpGet]
+    public async Task<IActionResult> Index()
+    {
+        var userId = CurrentUserId;
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        var favorites = await favoriteService.GetUserFavoritesAsync(userId);
+        var favoriteWorkstations = new List<FavoriteWorkstationViewModel>();
+
+        foreach (var favorite in favorites.Favorites)
         {
-            _logger = logger;
+            var isReserved = await reservationService.IsWorkstationReservedOnDateAsync(new IsWorkstationReservedOnDateRequest
+            {
+                WorkstationId = favorite.WorkstationId,
+                ReservationDate = today.AddDays(1)
+            });
+
+            favoriteWorkstations.Add(new FavoriteWorkstationViewModel
+            {
+                WorkstationId = favorite.WorkstationId,
+                Floor = favorite.Floor,
+                Zone = favorite.Zone,
+                IsAvailable = !isReserved.IsWorkstationReservedOnDate
+            });
         }
 
-        public IActionResult Index()
+        var model = new HomeViewModel
         {
-            return View();
-        }
+            SelectedDate = DateOnly.FromDateTime(DateTime.Today),
+            FavoriteWorkstations = favoriteWorkstations
+        };
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        return View(model);
     }
 }

@@ -1,6 +1,8 @@
 ﻿using OfficeReservation.Model;
 using OfficeReservation.Repository.Interfaces.Favorite;
 using OfficeReservation.Repository.Interfaces.Reservation;
+using OfficeReservation.Repository.Interfaces.User;
+using OfficeReservation.Repository.Interfaces.Workstation;
 using OfficeReservation.Services.DTOs.Reservation;
 using OfficeReservation.Services.Interfaces;
 
@@ -11,10 +13,18 @@ namespace OfficeReservation.Services.Implementations
         private const int MaxReservationDaysAheadAllowed = 14;
         private readonly IReservationRepository reservationRepository;
         private readonly IFavoriteRepository favoriteRepository;
-        public ReservationService(IReservationRepository reservationRepository, IFavoriteRepository favoriteRepository)
+        private readonly IUserRepository userRepository;
+        private readonly IWorkstationRepository workstationRepository;
+        public ReservationService(
+            IReservationRepository reservationRepository,
+            IFavoriteRepository favoriteRepository,
+            IUserRepository userRepository,
+            IWorkstationRepository workstationRepository)
         {
             this.reservationRepository = reservationRepository;
             this.favoriteRepository = favoriteRepository;
+            this.userRepository = userRepository;
+            this.workstationRepository = workstationRepository;
         }
         public async Task<AddReservationResponse> AddAsync(AddReservationRequest request)
         {
@@ -97,6 +107,20 @@ namespace OfficeReservation.Services.Implementations
             return new IsWorkstationReservedOnDateResponse { IsWorkstationReservedOnDate = workstationReservationOnDate != null };
         }
 
+        public async Task<GetByUserResponse> GetByUserAsync(int userId)
+        {
+            var filter = new ReservationFilter { UserId = userId };
+            var reservations = new List<ReservationInfo>();
+
+            await foreach (var reservation in reservationRepository.RetrieveCollectionAsync(filter))
+            {
+                var dto = await MapToDtoAsync(reservation);
+                reservations.Add(dto);
+            }
+
+            return new GetByUserResponse { Reservations = reservations };
+        }
+
         public async Task<GetReservedWorkstationIdsResponse> GetReservedWorkstationIdsAsync(DateOnly date)
         {
             var reservations = await reservationRepository.RetrieveCollectionAsync(
@@ -104,5 +128,27 @@ namespace OfficeReservation.Services.Implementations
 
             return new GetReservedWorkstationIdsResponse { ReservedWorkstationIds = reservations.Select(r => r.WorkstationId).Distinct() };
         }
+
+        private async Task<ReservationInfo> MapToDtoAsync(Reservation reservation)
+        {
+            var user = await userRepository.RetrieveByIdAsync(reservation.UserId);
+            var workstation = await workstationRepository.RetrieveByIdAsync(reservation.WorkstationId);
+
+            if (user == null || workstation == null)
+            {
+                throw new InvalidOperationException("User or Workstation not found for reservation.");
+            }
+
+            return new ReservationInfo
+            {
+                UserId = reservation.UserId,
+                WorkstationId = reservation.WorkstationId,
+                ReservationDate = reservation.ReservationDate,
+                UserName = user.Name,
+                Floor = workstation.Floor,
+                Zone = workstation.Zone
+            };
+        }
+
     }
 }

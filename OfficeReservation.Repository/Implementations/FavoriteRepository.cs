@@ -5,7 +5,7 @@ using OfficeReservation.Repository.Interfaces.Favorite;
 
 namespace OfficeReservation.Repository.Implementations
 {
-    public class FavoriteRepository : BaseRepository<Favorite, FavoriteFilter, FavoriteUpdate>
+    public class FavoriteRepository : BaseRepository<Favorite, FavoriteFilter, FavoriteUpdate>, IFavoriteRepository
     {
         protected override string[] GetColumns() => new[]
 {
