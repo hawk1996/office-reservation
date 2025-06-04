@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace SharedShopping.Web.Views.Account
+namespace OfficeReservation.Web.Views.Account
 {
     public class LoginModel : PageModel
     {
