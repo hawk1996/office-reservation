@@ -1,23 +1,35 @@
-﻿@model OfficeReservation.Web.Models.Home.HomeViewModel
+@model OfficeReservation.Web.Models.Home.HomeViewModel
 @{
     ViewData["Title"] = "Home";
+    var today = DateOnly.FromDateTime(DateTime.Today);
+    var minDate = today.ToString("yyyy-MM-dd");
+    var maxDate = today.AddDays(14).ToString("yyyy-MM-dd");
     var selectedDateString = Model.SelectedDate.ToString("yyyy-MM-dd");
 }
 
 <div class="container mt-4">
     <h2>Select a Date</h2>
 
-    <form method="get" asp-action="Index" asp-controller="Home" class="mb-4">
+    <form asp-action="Create" asp-controller="Reservation" method="get" class="mb-4">
         <div class="row align-items-end">
             <div class="col-md-6">
                 <label for="selectedDate" class="form-label">Reservation Date</label>
-                <input type="date" id="selectedDate" name="date" value="@selectedDateString" class="form-control" />
+                <input type="date"
+                       id="selectedDate"
+                       name="reservationDate"
+                       value="@selectedDateString"
+                       min="@minDate"
+                       max="@maxDate"
+                       class="form-control" />
             </div>
             <div class="col-md-6">
-                <a class="btn btn-success mt-3" asp-controller="Reservation" asp-action="Create" asp-route-reservationDate="@selectedDateString">Create New Reservation</a>
+                <button type="submit" class="btn btn-success mt-3 w-100">
+                    Create New Reservation
+                </button>
             </div>
         </div>
     </form>
+
 
     <h3>Your Favorite Workstations</h3>
 
