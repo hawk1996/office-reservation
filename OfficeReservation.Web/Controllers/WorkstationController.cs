@@ -43,9 +43,19 @@ namespace OfficeReservation.Web.Controllers
             var isFavoriteResponse = await favoriteService.IsFavoritedAsync(new IsFavoritedRequest { WorkstationId = workstationId, UserId = CurrentUserId });
             var isFavorite = isFavoriteResponse.IsFavorited;
             if (isFavorite && isFavoriteResponse.FavoriteId != null)
-                await favoriteService.RemoveFromFavoritesAsync(isFavoriteResponse.FavoriteId.Value);
+            {
+                var response = await favoriteService.RemoveFromFavoritesAsync(isFavoriteResponse.FavoriteId.Value);
+                if (!response.Success)
+                    TempData["ErrorMessage"] = response?.ErrorMessage;
+            }
+                
             else
-                await favoriteService.AddToFavoritesAsync(new AddToFavoritesRequest { WorkstationId = workstationId, UserId = CurrentUserId });
+            {
+                var response = await favoriteService.AddToFavoritesAsync(new AddToFavoritesRequest { WorkstationId = workstationId, UserId = CurrentUserId });
+                if (!response.Success)
+                    TempData["ErrorMessage"] = response?.ErrorMessage;
+            }
+                
 
             return RedirectToAction(nameof(Index));
         }

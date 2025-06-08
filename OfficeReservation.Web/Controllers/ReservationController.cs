@@ -60,7 +60,7 @@ namespace OfficeReservation.Web.Controllers
             var reservedIds = reservedIdsResponse.ReservedWorkstationIds;
             if (reservedIds.Contains(model.SelectedWorkstationId))
             {
-                ModelState.AddModelError("", "This workstation is no longer available.");
+                TempData["ErrorMessage"] = "This workstation is no longer available.";
                 return await RedisplayCreateFormWithErrors(model);
             }
 
@@ -73,7 +73,7 @@ namespace OfficeReservation.Web.Controllers
 
             if (!addResponse.Success)
             {
-                ModelState.AddModelError("", "Could not complete reservation. Please try again.");
+                TempData["ErrorMessage"] = addResponse.ErrorMessage;
                 return await RedisplayCreateFormWithErrors(model);
             }
 
